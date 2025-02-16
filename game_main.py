@@ -1,4 +1,5 @@
 import pygame
+import pickle
 import sys
 
 # Инициализация PyGame
@@ -18,14 +19,31 @@ RED = (255, 0, 0)
 # Шрифты
 font = pygame.font.Font(None, 36)
 
-# Игровые переменные
-score = 0
-click_power = 1
-upgrade_cost = 10
-
 # Кнопка для кликов
 click_button = pygame.Rect(300, 200, 200, 100)
 upgrade_button = pygame.Rect(300, 350, 200, 50)
+
+def save_game():
+    data={
+        "score": score,
+        "click_power": click_power,
+        "upgrade_cost": upgrade_cost,
+    }
+    with open("save.pkl", "wb") as f:
+        pickle.dump(data,f)
+
+def load_game():
+    global score,click_power,upgrade_cost
+    try:
+        with open("save.pkl","rb") as f:
+            data = pickle.load(f)
+            score = data['score']
+            click_power = data['click_power']
+            upgrade_cost = data['upgrade_cost']
+    except FileNotFoundError:
+        score = 0
+        click_power = 1
+        upgrade_cost = 10
 
 def draw_text(text, x, y, color=BLACK):
     text_surface = font.render(text, True, color)
@@ -61,8 +79,10 @@ def main():
 
         pygame.display.flip()
 
+    save_game()
     pygame.quit()
     sys.exit()
 
 if __name__ == "__main__":
+    load_game()
     main()
